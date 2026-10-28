@@ -25,4 +25,8 @@ public class GoStone {
     public void setLiberties(int liberties) {
         this.liberties = liberties;
     }
+
+    public int calculateLiberties(GoBoard board, GoPosition position) {
+        // implement logic for calculating liberties
+    }
 }
