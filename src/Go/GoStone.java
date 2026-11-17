@@ -1,8 +1,6 @@
 package Go;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class GoStone {
     public enum StoneColor {
@@ -11,14 +9,13 @@ public class GoStone {
     }
 
     private final GoStone.StoneColor color;
-    private int liberties;
 
     public GoStone (GoStone.StoneColor color) {
         this.color = color;
     };
 
     public int getLiberties(GoBoard board, GoPosition position) {
-        return liberties;
+        return calculateLiberties(board, position);
     }
 
     public StoneColor getColor() {
@@ -38,30 +35,48 @@ public class GoStone {
     }
 
     public int calculateLiberties(GoBoard board, GoPosition position) {
-        this.liberties = 0;
-        GoPosition north = new GoPosition(position.getRow() + 1, position.getCol());
-        GoPosition south = new GoPosition(position.getRow() - 1, position.getCol());
-        GoPosition west = new GoPosition(position.getRow(), position.getCol() - 1);
-        GoPosition east = new GoPosition(position.getRow(), position.getCol() + 1);
-        List<GoPosition> positions = List.of(north, south, east, west);
+        Set<GoPosition> visited = new HashSet<>();
+        Set<GoPosition> liberties = new HashSet<>();
+        StoneColor color = this.color;
+        explore(board, position, color, visited, liberties);
+        return liberties.size();
+    }
 
+    private void explore(GoBoard board, GoPosition current, StoneColor color, Set<GoPosition> visited, Set<GoPosition> liberties) {
+        if (!isInBounds(board, current)) {
+            return;
+        } else if (visited.contains(current)) {
+            return;
+        }
+        visited.add(current);
+        GoPosition north = new GoPosition(current.getRow() + 1, current.getCol());
+        GoPosition south = new GoPosition(current.getRow() - 1, current.getCol());
+        GoPosition west = new GoPosition(current.getRow(), current.getCol() - 1);
+        GoPosition east = new GoPosition(current.getRow(), current.getCol() + 1);
+        List<GoPosition> positions = List.of(north, south, east, west);
         for (GoPosition pos : positions) {
-            if (isInBounds(board, pos) && board.getStone(pos) == null) {
-                this.liberties += 1;
+            if (!isInBounds(board, pos)) {
+                continue;
+            }
+            if (board.getStone(pos) == null) {
+                liberties.add(pos);
+            } else if (board.getStone(pos).getColor() == color) {
+                explore(board, pos, color, visited, liberties);
+            } else {
+                continue;
             }
         }
-        return this.liberties;
     }
 
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         GoStone goStone = (GoStone) o;
-        return liberties == goStone.liberties && color == goStone.color;
+        return color == goStone.color;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(color, liberties);
+        return Objects.hashCode(color);
     }
 }
