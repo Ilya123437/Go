@@ -72,7 +72,4 @@ public class GoTests {
         board.addStone(position4, blackStone4);
         assertEquals(6, whiteStone.calculateLiberties(board, position));
     }
-
-
-
 }

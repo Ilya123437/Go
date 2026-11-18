@@ -1,5 +1,7 @@
 package Go;
 
+import Go.exceptions.InvalidMoveException;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -15,9 +17,24 @@ public class GoBoard {
         this.board = new HashMap<>();
     }
 
-    public void addStone(GoPosition position, GoStone goStone) {
-        // Need to add a check to see if the position is within the bounds of the board
-        this.board.put(position, goStone);
+    public boolean isInBounds(GoPosition position) {
+        int rows = this.rows;
+        int cols = this.cols;
+        if (position.getRow() < 0 || position.getRow() > rows) {
+            return false;
+        }
+        if (position.getCol() < 0 || position.getCol() > cols) {
+            return false;
+        }
+        return true;
+    }
+
+    public void addStone(GoPosition position, GoStone goStone) throws InvalidMoveException {
+        if (isInBounds(position)) {
+            this.board.put(position, goStone);
+        } else {
+            throw new InvalidMoveException("Move is not within the bounds of the board");
+        }
     }
 
     public void removeStone(GoPosition position) {

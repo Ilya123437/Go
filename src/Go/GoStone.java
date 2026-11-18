@@ -1,5 +1,7 @@
 package Go;
 
+import Go.records.GoShape;
+
 import java.util.*;
 
 public class GoStone {
@@ -35,11 +37,15 @@ public class GoStone {
     }
 
     public int calculateLiberties(GoBoard board, GoPosition position) {
+        return findShape(board, position).liberties().size();
+    }
+
+    public GoShape findShape(GoBoard board, GoPosition position) {
         Set<GoPosition> visited = new HashSet<>();
         Set<GoPosition> liberties = new HashSet<>();
         StoneColor color = this.color;
         explore(board, position, color, visited, liberties);
-        return liberties.size();
+        return new GoShape(liberties, visited);
     }
 
     private void explore(GoBoard board, GoPosition current, StoneColor color, Set<GoPosition> visited, Set<GoPosition> liberties) {
